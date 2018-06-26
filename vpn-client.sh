@@ -130,7 +130,8 @@ vpn_main () {
     case $1 in
       restart) printf '%s\n' "OpenVPN is inactive"
                chk_online ;;
-      status|stop|stopnow) printf '%s\n' "OpenVPN is inactive" ;;
+      status|stop) printf '%s\n' "OpenVPN is inactive" ;;
+      stopnow) ;;
       *) vpn_start ;;
     esac
   fi
