@@ -11,7 +11,7 @@ PC[3]="d.dummy.client"
 
 # Useful for scripts (see online-netctl.sh):
 vpn_stopnow () {
-  printf "Stopping OpenVPN... "
+  printf '%s\n' "Stopping OpenVPN... "
   vpn_arg stop
 }
 
@@ -97,8 +97,6 @@ chk_status () {
   if systemctl is-active -q openvpn-client@*; then
     vpn_active_client
     printf '%s\n' "OpenVPN active client: $AC"
-  elif [ "$1" = "stop" ]; then
-    printf '%s\n' "Done!"
   else
     printf '%s\n' "OpenVPN is inactive"
   fi
