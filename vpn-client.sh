@@ -11,7 +11,7 @@ PC[3]="d.dummy.client"
 
 # Useful for scripts (see online-netctl.sh):
 vpn_stopnow () {
-  printf '%s\n' "Stopping OpenVPN... "
+  printf '%s\n' "Stopping OpenVPN..."
   vpn_arg stop
 }
 
@@ -135,4 +135,4 @@ vpn_main () {
   fi
 }
 
-vpn_main $1
+vpn_main "$1"
