@@ -90,7 +90,7 @@ vpn_client () {
 }
 
 vpn_active_client () {
-  AC="$(systemctl status openvpn-client@* | grep -oP "OpenVPN tunnel for \K.*")"
+  AC="$(systemctl status openvpn-client@* | grep -oP 'OpenVPN tunnel for \K.*')"
 }
 
 chk_status () {
