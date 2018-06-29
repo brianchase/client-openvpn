@@ -9,28 +9,28 @@ PC[1]="b.dummy.client"
 PC[2]="c.dummy.client"
 PC[3]="d.dummy.client"
 
-# Useful for scripts (see online-netctl.sh):
+# Useful for scripts (see my online-netctl.sh):
 vpn_stopnow () {
-  printf '%s\n' "Stopping OpenVPN..."
+  printf '%s\n' "Stopping OpenVPN client $DC..."
   vpn_arg stop
 }
 
 vpn_stop () {
-  read -r -p "Stop OpenVPN client $AC? [y/n] " DN
+  read -r -p "Stop OpenVPN client $DC? [y/n] " DN
   if [ "$DN" = y ]; then
     vpn_stopnow
   fi
 }
 
 vpn_arg () {
-  if systemctl "$1" openvpn-client@*; then
+  if systemctl "$1" openvpn-client@"$DC"; then
     chk_status "$1"
   fi
 }
 
 vpn_restart () {
   if chk_online; then
-    read -r -p "Restart OpenVPN client $AC? [y/n] " RV
+    read -r -p "Restart OpenVPN client $DC? [y/n] " RV
     if [ "$RV" = y ]; then
       vpn_arg restart
     fi
@@ -40,8 +40,8 @@ vpn_restart () {
 vpn_op () {
   until [ "$OP" ]; do
     printf '%s\n\n' "Please choose:"
-    printf '\t%s\n' "1. Stop OpenVPN client $AC"
-    printf '\t%s\n' "2. Restart OpenVPN client $AC"
+    printf '\t%s\n' "1. Stop OpenVPN client $DC"
+    printf '\t%s\n' "2. Restart OpenVPN client $DC"
     printf '\t%s\n' "3. Exit"
     read -r OP
     case $OP in
@@ -90,15 +90,14 @@ vpn_client () {
 }
 
 vpn_active_client () {
-  AC="$(systemctl status openvpn-client@* | grep -oP 'OpenVPN tunnel for \K.*')"
+  DC="$(systemctl status openvpn-client@* | grep -oP 'OpenVPN tunnel for \K.*')"
 }
 
 chk_status () {
-  if systemctl is-active -q openvpn-client@*; then
-    vpn_active_client
-    printf '%s\n' "OpenVPN active client: $AC"
+  if systemctl is-active -q openvpn-client@"$DC"; then
+    printf '%s\n' "OpenVPN client $DC is active"
   else
-    printf '%s\n' "OpenVPN is inactive"
+    printf '%s\n' "OpenVPN client $DC is inactive"
   fi
 }
 
@@ -107,8 +106,7 @@ vpn_start () {
     if vpn_client; then
       read -r -p "Start OpenVPN client $DC? [y/n] " UP
       if [ "$UP" = y ]; then
-        systemctl start openvpn-client@"$DC"
-        chk_status
+        vpn_arg start
       fi
     fi
   fi
@@ -119,7 +117,7 @@ vpn_main () {
     vpn_active_client
     case $1 in
       restart) vpn_restart ;;
-      status) printf '%s\n' "OpenVPN active client: $AC" ;;
+      status) printf '%s\n' "OpenVPN active client: $DC" ;;
       stop) vpn_stop ;;
       stopnow) vpn_stopnow ;;
       *) vpn_op ;;
