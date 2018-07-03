@@ -150,4 +150,4 @@ vpn_main () {
   fi
 }
 
-vpn_main "$1"
+vpn_main "$1" "$2"
