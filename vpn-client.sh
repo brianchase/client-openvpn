@@ -139,7 +139,7 @@ vpn_start () {
 
 vpn_main () {
   if systemctl is-active -q openvpn-client@*; then
-    CL="$(systemctl status openvpn-client@* | grep -oP 'OpenVPN tunnel for \K.*\b')"
+    CL="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
     case $1 in
       restart) vpn_restart "$2" ;;
       status) printf '%s\n' "OpenVPN client $CL is active" ;;
