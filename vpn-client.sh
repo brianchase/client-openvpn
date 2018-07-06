@@ -26,6 +26,8 @@ vpn_restart () {
     if [ "$RV" = y ] || [ "$1" = now ]; then
       vpn_arg restart
     fi
+  else
+    return 1
   fi
 }
 
@@ -39,7 +41,7 @@ vpn_op () {
     case $OP in
       1) vpn_stop now ;;
       2) vpn_restart now ;;
-      3) break ;;
+      3) return 1 ;;
       *) unset OP ;;
     esac
   done
