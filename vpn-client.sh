@@ -148,7 +148,8 @@ vpn_main () {
     esac
   else
     case $1 in
-      restart|status|stop) printf '%s\n' "No OpenVPN client is active" ;;
+      restart|stop) return 1 ;;
+      status) printf '%s\n' "No OpenVPN client is active" ;;
       *) vpn_start ;;
     esac
   fi
