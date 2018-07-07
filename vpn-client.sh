@@ -9,28 +9,6 @@ PC[1]="b.dummy.client"
 PC[2]="c.dummy.client"
 PC[3]="d.dummy.client"
 
-vpn_stop () {
-  if [ "$1" != now ]; then
-    read -r -p "Stop OpenVPN client $CL? [y/n] " DN
-  fi
-  if [ "$DN" = y ] || [ "$1" = now ]; then
-    vpn_arg stop
-  fi
-}
-
-vpn_restart () {
-  if chk_online; then
-    if [ "$1" != now ]; then
-      read -r -p "Restart OpenVPN client $CL? [y/n] " RV
-    fi
-    if [ "$RV" = y ] || [ "$1" = now ]; then
-      vpn_arg restart
-    fi
-  else
-    return 1
-  fi
-}
-
 vpn_op () {
   until [ "$OP" ]; do
     printf '%s\n\n' "Please choose:"
@@ -39,32 +17,12 @@ vpn_op () {
     printf '\t%s\n' "3. Skip"
     read -r OP
     case $OP in
-      1) vpn_stop now ;;
-      2) vpn_restart now ;;
+      1) vpn_arg stop ;;
+      2) vpn_arg restart ;;
       3) return 1 ;;
       *) unset OP ;;
     esac
   done
-}
-
-chk_online () {
-  if ! wget -q --tries=10 --timeout=20 --spider http://google.com; then
-    printf '%s\n' "Not online! Please connect, then rerun this script!"
-    return 1
-  fi
-}
-
-chk_client () {
-  if [ -z "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
-    printf '%s\n' "Could not start OpenVPN! No listed clients!"
-    return 1
-  elif [ -z "$DC" ] && [ "${#PC[*]}" -eq 1 ]; then
-    CL="${PC[*]}"
-  elif [ "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
-    CL="$DC"
-  elif [ "${#PC[*]}" -eq 1 ] && [ "$DC" = "${PC[*]}" ]; then
-    CL="$DC"
-  fi
 }
 
 client_loop () {
@@ -124,6 +82,23 @@ client_loop () {
   done
 }
 
+vpn_start () {
+  if [ -z "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
+    printf '%s\n' "Could not start OpenVPN! No listed clients!"
+    return 1
+  elif [ -z "$DC" ] && [ "${#PC[*]}" -eq 1 ]; then
+    CL="${PC[*]}"
+  elif [ "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
+    CL="$DC"
+  elif [ "${#PC[*]}" -eq 1 ] && [ "$DC" = "${PC[*]}" ]; then
+    CL="$DC"
+  else
+    client_loop && vpn_arg start
+    return
+  fi
+  vpn_confirm start "$1"
+}
+
 vpn_arg () {
   if ! systemctl "$1" openvpn-client@"$CL"; then
     printf '%s\n' "Failed to $1 OpenVPN client $CL!"
@@ -131,10 +106,33 @@ vpn_arg () {
   fi
 }
 
-vpn_start () {
-  if chk_online && chk_client && client_loop; then
-    vpn_arg start
+vpn_confirm () {
+  if [ "$2" = now ]; then
+    vpn_arg "$1"
   else
+    read -r -p "${1^} OpenVPN client $CL? [y/n] " CF
+    if [ "$CF" = y ]; then
+      vpn_arg "$1"
+    else
+      return 1
+    fi
+  fi
+}
+
+chk_online () {
+  if wget -q --tries=10 --timeout=20 --spider http://google.com; then
+    if [ "$1" = restart ]; then
+      vpn_confirm restart "$2"
+    elif [ "$CL" ]; then
+      vpn_op
+    else
+      vpn_start "$2"
+    fi
+  elif [ "$CL" ]; then
+    printf '%s\n' "OpenVPN client $CL is active but offline!"
+    vpn_confirm stop
+  else
+    printf '%s\n' "No internet connection or active OpenVPN client!"
     return 1
   fi
 }
@@ -143,16 +141,15 @@ vpn_main () {
   if systemctl is-active -q openvpn-client@*; then
     CL="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
     case $1 in
-      restart) vpn_restart "$2" ;;
       status) printf '%s\n' "OpenVPN client $CL is active" ;;
-      stop) vpn_stop "$2" ;;
-      *) vpn_op ;;
+      stop) vpn_confirm "$1" "$2" ;;
+      *) chk_online "$1" "$2" ;;
     esac
   else
     case $1 in
       restart|stop) return 1 ;;
-      status) printf '%s\n' "No OpenVPN client is active" ;;
-      *) vpn_start ;;
+      status) printf '%s\n' "No active OpenVPN client" ;;
+      *) chk_online "$1" "$2" ;;
     esac
   fi
 }
