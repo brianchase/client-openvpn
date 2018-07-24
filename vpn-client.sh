@@ -119,7 +119,7 @@ vpn_confirm () {
   fi
 }
 
-chk_online () {
+vpn_online () {
   if wget -q --tries=10 --timeout=20 --spider http://google.com; then
     if [ "$1" = restart ]; then
       vpn_confirm restart "$2"
@@ -143,13 +143,13 @@ vpn_main () {
     case $1 in
       status) printf '%s\n' "OpenVPN client $CL is active" ;;
       stop) vpn_confirm "$1" "$2" ;;
-      *) chk_online "$1" "$2" ;;
+      *) vpn_online "$1" "$2" ;;
     esac
   else
     case $1 in
       restart|stop) return 1 ;;
       status) printf '%s\n' "No active OpenVPN client" ;;
-      *) chk_online "$1" "$2" ;;
+      *) vpn_online "$1" "$2" ;;
     esac
   fi
 }
