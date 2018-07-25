@@ -1,97 +1,99 @@
 #!/bin/bash
 
 # Optional default client:
-#DC="a.dummy.client"
+#DClient="a.dummy.client"
 
 # Array of possible clients (change as necessary):
-PC[0]="a.dummy.client"
-PC[1]="b.dummy.client"
-PC[2]="c.dummy.client"
-PC[3]="d.dummy.client"
+PClients[0]="a.dummy.client"
+PClients[1]="b.dummy.client"
+PClients[2]="c.dummy.client"
+PClients[3]="d.dummy.client"
 
 vpn_op () {
-  until [ "$OP" ]; do
+  until [ "$Opt" ]; do
     printf '%s\n\n' "Please choose:"
-    printf '\t%s\n' "1. Stop OpenVPN client $CL"
-    printf '\t%s\n' "2. Restart OpenVPN client $CL"
+    printf '\t%s\n' "1. Stop OpenVPN client $Client"
+    printf '\t%s\n' "2. Restart OpenVPN client $Client"
     printf '\t%s\n' "3. Skip"
-    read -r OP
-    case $OP in
+    local Opt
+    read -r Opt
+    case $Opt in
       1) vpn_arg stop ;;
       2) vpn_arg restart ;;
       3) return 1 ;;
-      *) unset OP ;;
+      *) unset Opt ;;
     esac
   done
 }
 
 client_loop () {
-  until [ "$CL" ]; do
-    N=0
+  until [ "$Client" ]; do
+    local N=0
+    local Opt
     printf '%s\n\n' "Please choose:"
-    if [ "$DC" ]; then
-      for i in "${PC[@]}"; do
-        if [ "$i" = "$DC" ]; then
-          for j in "${!PC[@]}"; do
-            if [ "${PC[$j]}" = "$i" ]; then
-              unset "PC[$j]"
-              PC=("${PC[@]}")
+    if [ "$DClient" ]; then
+      for i in "${PClients[@]}"; do
+        if [ "$i" = "$DClient" ]; then
+          for j in "${!PClients[@]}"; do
+            if [ "${PClients[$j]}" = "$i" ]; then
+              unset "PClients[$j]"
+              PClients=("${PClients[@]}")
               break;
             fi
           done
         fi
       done
-      PC=("$DC" "${PC[@]}")
-      for j in "${!PC[@]}"; do
+      PClients=("$DClient" "${PClients[@]}")
+      for j in "${!PClients[@]}"; do
         if [ "$j" = 0 ]; then
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PC[j]} [default]"
+          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]} [default]"
         else
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PC[j]}"
+          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]}"
         fi
       done
       printf '\t%s\n' "$((N += 1)). Skip"
-      read -r OP
-      case $OP in
+      read -r Opt
+      case $Opt in
         *[!1-9]*) continue ;;
       esac
-      if [ -z "$OP" ]; then
-        CL="${PC[0]}"
-      elif [ "$OP" -gt "$N" ]; then
+      if [ -z "$Opt" ]; then
+        Client="${PClients[0]}"
+      elif [ "$Opt" -gt "$N" ]; then
         continue
-      elif [ "$OP" -ne "$N" ]; then
-        CL="${PC[(($OP - 1))]}"
+      elif [ "$Opt" -ne "$N" ]; then
+        Client="${PClients[(($Opt - 1))]}"
       fi
     else
-      for i in "${!PC[@]}"; do
-        printf '\t%s\n' "$((N += 1)). OpenVPN client ${PC[i]}"
+      for i in "${!PClients[@]}"; do
+        printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[i]}"
       done
       printf '\t%s\n' "$((N += 1)). Skip"
-      read -r OP
-      case $OP in
+      read -r Opt
+      case $Opt in
         ''|*[!1-9]*) continue ;;
       esac
-      if [ "$OP" -gt "$N" ]; then
+      if [ "$Opt" -gt "$N" ]; then
         continue
-      elif [ "$OP" -ne "$N" ]; then
-        CL="${PC[(($OP - 1))]}"
+      elif [ "$Opt" -ne "$N" ]; then
+        Client="${PClients[(($Opt - 1))]}"
       fi
     fi
-    if [ "$OP" ] && [ "$OP" -eq "$N" ]; then
+    if [ "$Opt" ] && [ "$Opt" -eq "$N" ]; then
       return 1
     fi
   done
 }
 
 vpn_start () {
-  if [ -z "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
+  if [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 0 ]; then
     printf '%s\n' "Could not start OpenVPN! No listed clients!"
     return 1
-  elif [ -z "$DC" ] && [ "${#PC[*]}" -eq 1 ]; then
-    CL="${PC[*]}"
-  elif [ "$DC" ] && [ "${#PC[*]}" -eq 0 ]; then
-    CL="$DC"
-  elif [ "${#PC[*]}" -eq 1 ] && [ "$DC" = "${PC[*]}" ]; then
-    CL="$DC"
+  elif [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 1 ]; then
+    Client="${PClients[*]}"
+  elif [ "$DClient" ] && [ "${#PClients[*]}" -eq 0 ]; then
+    Client="$DClient"
+  elif [ "${#PClients[*]}" -eq 1 ] && [ "$DClient" = "${PClients[*]}" ]; then
+    Client="$DClient"
   else
     client_loop && vpn_arg start
     return
@@ -100,8 +102,8 @@ vpn_start () {
 }
 
 vpn_arg () {
-  if ! systemctl "$1" openvpn-client@"$CL"; then
-    printf '%s\n' "Failed to $1 OpenVPN client $CL!"
+  if ! systemctl "$1" openvpn-client@"$Client"; then
+    printf '%s\n' "Failed to $1 OpenVPN client $Client!"
     return 1
   fi
 }
@@ -110,8 +112,9 @@ vpn_confirm () {
   if [ "$2" = now ]; then
     vpn_arg "$1"
   else
-    read -r -p "${1^} OpenVPN client $CL? [y/n] " CF
-    if [ "$CF" = y ]; then
+    local Confirm
+    read -r -p "${1^} OpenVPN client $Client? [y/n] " Confirm
+    if [ "$Confirm" = y ]; then
       vpn_arg "$1"
     else
       return 1
@@ -123,13 +126,13 @@ vpn_online () {
   if wget -q --tries=10 --timeout=20 --spider http://google.com; then
     if [ "$1" = restart ]; then
       vpn_confirm restart "$2"
-    elif [ "$CL" ]; then
+    elif [ "$Client" ]; then
       vpn_op
     else
       vpn_start "$2"
     fi
-  elif [ "$CL" ]; then
-    printf '%s\n' "OpenVPN client $CL is active but offline!"
+  elif [ "$Client" ]; then
+    printf '%s\n' "OpenVPN client $Client is active but offline!"
     vpn_confirm stop
   else
     printf '%s\n' "No internet connection or active OpenVPN client!"
@@ -139,9 +142,9 @@ vpn_online () {
 
 vpn_main () {
   if systemctl is-active -q openvpn-client@*; then
-    CL="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
+    Client="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
     case $1 in
-      status) printf '%s\n' "OpenVPN client $CL is active" ;;
+      status) printf '%s\n' "OpenVPN client $Client is active" ;;
       stop) vpn_confirm "$1" "$2" ;;
       *) vpn_online "$1" "$2" ;;
     esac
