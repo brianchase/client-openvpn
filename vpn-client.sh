@@ -28,8 +28,7 @@ vpn_op () {
 
 client_loop () {
   until [ "$Client" ]; do
-    local N=0
-    local Opt
+    local N=0 Opt i j k
     printf '%s\n\n' "Please choose:"
     if [ "$DClient" ]; then
       for i in "${PClients[@]}"; do
@@ -44,11 +43,11 @@ client_loop () {
         fi
       done
       PClients=("$DClient" "${PClients[@]}")
-      for j in "${!PClients[@]}"; do
-        if [ "$j" = 0 ]; then
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]} [default]"
+      for k in "${!PClients[@]}"; do
+        if [ "$k" = 0 ]; then
+          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[k]} [default]"
         else
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]}"
+          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[k]}"
         fi
       done
       printf '\t%s\n' "$((N += 1)). Skip"
