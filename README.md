@@ -6,6 +6,62 @@ This Bash script helps with managing
 [VPN](https://en.wikipedia.org/wiki/Virtual_private_network)
 connections with [OpenVPN](https://openvpn.net/).
 
+## HOW IT WORKS
+
+On line four of the script, you may specify a default VPN client by
+making it the value of the variable `DClient`:
+
+```
+#DClient="a.dummy.client"
+```
+
+You may specify other clients adding them to the array `PClients`
+(possible clients) that begins on line seven:
+
+```
+PClients[0]="a.dummy.client"
+PClients[1]="b.dummy.client"
+PClients[2]="c.dummy.client"
+PClients[3]="d.dummy.client"
+```
+
+If you want the script to start clients, you need to list at least one
+valid client at the top of the script, either as a default or as a
+"possible client." This is because users don't typically have access
+to `/etc/openvpn/client/`, where client configuration files reside, so
+the script doesn't attempt to determine what clients are available to
+start. You need to tell it, manually.
+
+One more condition for starting a client, almost too basic to mention,
+is an internet connection.
+
+Assuming all that, if you run the script without options, and no
+client is active, the script asks to start a client. If you listed
+only one client at the top of the script, the script asks to start it.
+If you listed more than one, the script prints that list. You may
+choose one to start or choose "skip" to exit the script. A default
+client, if you gave one, appears at the top of the list with the flag
+`[default]`. You can simply press Enter to start it.
+
+If you run the script without options, and a client is active, the
+script asks if you want to stop or restart the active client or "skip"
+to exit the script.
+
+You may also run the script with several options:
+
+```
+$ vpn-client.sh [restart|start|status|stop|start now|restart now|stop now]
+```
+
+The option `status` reports on [OpenVPN](https://openvpn.net/):
+whether it's running and, if so, which client is active. If the script
+detects that a client is active but without an internet connection,
+the script reports that, too.
+
+The options `restart`, `start`, and `stop` attempt to perform their
+respective functions. The options `restart now`, `start now`, and
+`stop now` do the same but without asking for confirmation.
+
 ## PORTABILITY
 
 Since the script uses arrays, it's not strictly
