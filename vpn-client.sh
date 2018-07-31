@@ -11,10 +11,10 @@ PClients[3]="d.dummy.client"
 
 vpn_op () {
   until [ "$Opt" ]; do
-    printf '%s\n\n' "Please choose:"
-    printf '\t%s\n' "1. Stop OpenVPN client $Client"
-    printf '\t%s\n' "2. Restart OpenVPN client $Client"
-    printf '\t%s\n' "3. Skip"
+    printf '%s\n\n\t%s\n\t%s\n\t%s\n' "Please choose:" \
+      "1. Stop OpenVPN client $Client" \
+      "2. Restart OpenVPN client $Client" \
+      "3. Skip"
     local Opt
     read -r Opt
     case $Opt in
