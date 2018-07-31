@@ -85,7 +85,7 @@ client_loop () {
 
 vpn_start () {
   if [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 0 ]; then
-    printf '%s\n' "Could not start OpenVPN! No listed clients!"
+    printf '%s\n' "Could not start OpenVPN! No listed clients!" >&2
     return 1
   elif [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 1 ]; then
     Client="${PClients[*]}"
@@ -102,7 +102,7 @@ vpn_start () {
 
 vpn_arg () {
   if ! systemctl "$1" openvpn-client@"$Client"; then
-    printf '%s\n' "Failed to $1 OpenVPN client $Client!"
+    printf '%s\n' "Failed to $1 OpenVPN client $Client!" >&2
     return 1
   fi
 }
@@ -134,7 +134,7 @@ vpn_online () {
     printf '%s\n' "OpenVPN client $Client is active but offline!"
     vpn_confirm stop
   else
-    printf '%s\n' "No internet connection or active OpenVPN client!"
+    printf '%s\n' "No internet connection or active OpenVPN client!" >&2
     return 1
   fi
 }
