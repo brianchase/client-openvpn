@@ -31,6 +31,7 @@ client_loop () {
     local N=0 Opt i j k
     printf '%s\n\n' "Please choose:"
     if [ "$DClient" ]; then
+# See if DClient is in PClients. If so, remove it.
       for i in "${PClients[@]}"; do
         if [ "$i" = "$DClient" ]; then
           for j in "${!PClients[@]}"; do
@@ -42,6 +43,7 @@ client_loop () {
           done
         fi
       done
+# To list DClient first, make it PClients[0] and call it 'default'.
       PClients=("$DClient" "${PClients[@]}")
       for k in "${!PClients[@]}"; do
         if [ "$k" = 0 ]; then
@@ -63,6 +65,7 @@ client_loop () {
         Client="${PClients[(($Opt - 1))]}"
       fi
     else
+# If DClient has no value, build the menu with PClients alone.
       for i in "${!PClients[@]}"; do
         printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[i]}"
       done
@@ -94,9 +97,11 @@ vpn_start () {
   elif [ "${#PClients[*]}" -eq 1 ] && [ "$DClient" = "${PClients[*]}" ]; then
     Client="$DClient"
   else
+# If there's more than one client, choose which one to start.
     client_loop && vpn_arg start
     return
   fi
+# If there's just one client, set about starting it.
   vpn_confirm start "$1"
 }
 
@@ -124,16 +129,21 @@ vpn_confirm () {
 vpn_online () {
   if wget -q --tries=10 --timeout=20 --spider http://google.com; then
     if [ "$1" = restart ]; then
+# An internet connection, OpenVPN is active, and '$1' is 'restart'.
       vpn_confirm restart "$2"
     elif [ "$Client" ]; then
+# An internet connection and OpenVPN is active.
       vpn_op
     else
+# An internet connection and OpenVPN is inactive.
       vpn_start "$2"
     fi
   elif [ "$Client" ]; then
+# No internet connection and OpenVPN is active.
     printf '%s\n' "OpenVPN client $Client is active but offline!"
     vpn_confirm stop
   else
+# No internet connection and OpenVPN is inactive.
     printf '%s\n' "No internet connection or active OpenVPN client!" >&2
     return 1
   fi
