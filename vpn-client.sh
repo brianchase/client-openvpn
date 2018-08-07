@@ -41,15 +41,15 @@ client_loop () {
       done
 # List DClient first, as "default", by making it PClients[0].
       PClients=("$DClient" "${PClients[@]}")
-      printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[0]} [default]"
+      printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[0]} [default]"
     else
 # Otherwise, list PClients[0] without calling it "default".
-      printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[0]}"
+      printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[0]}"
     fi
 # Now build the rest of the menu.
     for j in "${!PClients[@]}"; do
       if [ "$j" != 0 ]; then
-        printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]}"
+        printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[j]}"
       fi
     done
     printf '\t%s\n' "$((N += 1)). Skip"
@@ -63,7 +63,7 @@ client_loop () {
       Client="${PClients[0]}"
     elif [ "$Opt" -ge 1 ] && [ "$Opt" -lt "$N" ]; then
       Client="${PClients[(($Opt - 1))]}"
-    elif [ "$Opt" ] && [ "$Opt" -eq "$N" ]; then
+    elif [ "$Opt" -eq "$N" ]; then
       return 1
     fi
   done
