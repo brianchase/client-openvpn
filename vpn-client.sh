@@ -28,59 +28,42 @@ vpn_op () {
 
 client_loop () {
   until [ "$Client" ]; do
-    local N=0 Opt i j k
+    local N=0 Opt i j
     printf '%s\n\n' "Please choose:"
     if [ "$DClient" ]; then
-# See if DClient is in PClients. If so, remove it.
-      for i in "${PClients[@]}"; do
-        if [ "$i" = "$DClient" ]; then
-          for j in "${!PClients[@]}"; do
-            if [ "${PClients[$j]}" = "$i" ]; then
-              unset "PClients[$j]"
-              PClients=("${PClients[@]}")
-              break;
-            fi
-          done
-        fi
-      done
-# To list DClient first, make it PClients[0] and call it 'default'.
-      PClients=("$DClient" "${PClients[@]}")
-      for k in "${!PClients[@]}"; do
-        if [ "$k" = 0 ]; then
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[k]} [default]"
-        else
-          printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[k]}"
-        fi
-      done
-      printf '\t%s\n' "$((N += 1)). Skip"
-      read -r Opt
-      case $Opt in
-        *[!1-9]*) continue ;;
-      esac
-      if [ -z "$Opt" ]; then
-        Client="${PClients[0]}"
-      elif [ "$Opt" -gt "$N" ]; then
-        continue
-      elif [ "$Opt" -ne "$N" ]; then
-        Client="${PClients[(($Opt - 1))]}"
-      fi
-    else
-# If DClient has no value, build the menu with PClients alone.
+# If DClient has a value, see if it's in PClients. If so, remove it.
       for i in "${!PClients[@]}"; do
-        printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[i]}"
+        if [ "${PClients[$i]}" = "$DClient" ]; then
+          unset "PClients[$i]"
+          PClients=("${PClients[@]}")
+          break;
+        fi
       done
-      printf '\t%s\n' "$((N += 1)). Skip"
-      read -r Opt
-      case $Opt in
-        ''|*[!1-9]*) continue ;;
-      esac
-      if [ "$Opt" -gt "$N" ]; then
-        continue
-      elif [ "$Opt" -ne "$N" ]; then
-        Client="${PClients[(($Opt - 1))]}"
-      fi
+# List DClient first, as "default", by making it PClients[0].
+      PClients=("$DClient" "${PClients[@]}")
+      printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[0]} [default]"
+    else
+# Otherwise, list PClients[0] without calling it "default".
+      printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[0]}"
     fi
-    if [ "$Opt" ] && [ "$Opt" -eq "$N" ]; then
+# Now build the rest of the menu.
+    for j in "${!PClients[@]}"; do
+      if [ "$j" != 0 ]; then
+        printf '\t%s\n' "$((N += 1)). OpenVPN client ${PClients[j]}"
+      fi
+    done
+    printf '\t%s\n' "$((N += 1)). Skip"
+    read -r Opt
+    case $Opt in
+      *[!1-9]*) continue ;;
+    esac
+    if [ -z "$Opt" ] && [ -z "$DClient" ]; then
+      continue
+    elif [ -z "$Opt" ]; then
+      Client="${PClients[0]}"
+    elif [ "$Opt" -ge 1 ] && [ "$Opt" -lt "$N" ]; then
+      Client="${PClients[(($Opt - 1))]}"
+    elif [ "$Opt" ] && [ "$Opt" -eq "$N" ]; then
       return 1
     fi
   done
