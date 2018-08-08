@@ -62,8 +62,8 @@ detects that a client is active but without an internet connection,
 the script reports that, too.
 
 The options `restart`, `start`, and `stop` attempt to perform their
-respective actions. Adding `now` does so without asking for
-confirmation.
+respective actions on the client. Adding `now` does so without asking
+for confirmation.
 
 ## Portability
 
