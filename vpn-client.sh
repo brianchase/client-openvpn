@@ -28,10 +28,10 @@ vpn_op () {
 
 client_loop () {
   until [ "$Client" ]; do
-    local N=0 Opt i j
+    local DefTag N=0 Opt i j
     printf '%s\n\n' "Please choose:"
     if [ "$DClient" ]; then
-# If DClient has a value, see if it's in PClients. If so, remove it.
+# If DClient has a value, make it Profiles[0].
       for i in "${!PClients[@]}"; do
         if [ "${PClients[$i]}" = "$DClient" ]; then
           unset "PClients[$i]"
@@ -39,14 +39,11 @@ client_loop () {
           break;
         fi
       done
-# List DClient first, as "default", by making it PClients[0].
       PClients=("$DClient" "${PClients[@]}")
-      printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[0]} [default]"
-    else
-# Otherwise, list PClients[0] without calling it "default".
-      printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[0]}"
+      DefTag=" [default]"
     fi
 # Now build the rest of the menu.
+    printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[0]}$DefTag"
     for j in "${!PClients[@]}"; do
       if [ "$j" != 0 ]; then
         printf '\t%s\n' "$((N += 1)). Start OpenVPN client ${PClients[j]}"
