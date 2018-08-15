@@ -53,6 +53,7 @@ client_loop () {
     read -r Opt
     case $Opt in
       *[!1-9]*) continue ;;
+      "$N") return 1 ;;
     esac
     if [ -z "$Opt" ] && [ -z "$DClient" ]; then
       continue
@@ -60,8 +61,6 @@ client_loop () {
       Client="${PClients[0]}"
     elif [ "$Opt" -ge 1 ] && [ "$Opt" -lt "$N" ]; then
       Client="${PClients[(($Opt - 1))]}"
-    elif [ "$Opt" -eq "$N" ]; then
-      return 1
     fi
   done
 }
