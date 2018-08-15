@@ -97,11 +97,8 @@ vpn_confirm () {
   else
     local Confirm
     read -r -p "${1^} OpenVPN client $Client? [y/n] " Confirm
-    if [ "$Confirm" = y ]; then
-      vpn_arg "$1"
-    else
-      return 1
-    fi
+    [ "$Confirm" = y ] || return 1
+    vpn_arg "$1"
   fi
 }
 
