@@ -1,4 +1,4 @@
-# vpn-client
+# client-openvpn
 
 ## About
 
@@ -53,7 +53,7 @@ to exit the script.
 You may also run the script with several options:
 
 ```
-$ vpn-client.sh [restart [now]|start [now]|status|stop [now]]
+$ client-openvpn.sh [restart [now]|start [now]|status|stop [now]]
 ```
 
 The option `status` reports on [OpenVPN](https://openvpn.net/):
@@ -68,10 +68,7 @@ for confirmation.
 ## Portability
 
 Since the script uses arrays, it's not strictly
-[POSIX](https://en.wikipedia.org/wiki/POSIX)-compliant. As a result,
-it isn't compatible with
-[Dash](http://gondor.apana.org.au/~herbert/dash/) and probably a good
-number of other shells.
+[POSIX](https://en.wikipedia.org/wiki/POSIX)-compliant.
 
 ## License
 
