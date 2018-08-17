@@ -8,7 +8,7 @@ connections with [OpenVPN](https://openvpn.net/).
 
 ## How It Works
 
-On line four of the script, you may specify a default VPN client by
+On line six of the script, you may specify a default VPN client by
 making it the value of the variable `DClient`:
 
 ```
@@ -16,7 +16,7 @@ making it the value of the variable `DClient`:
 ```
 
 You may specify other clients by adding them to the array `PClients`
-(possible clients) that begins on line seven:
+(possible clients) that starts on line nine:
 
 ```
 PClients[0]="a.dummy.client"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# From: https://github.com/brianchase/client-openvpn
+
 # Optional default client:
 #DClient="a.dummy.client"
 
