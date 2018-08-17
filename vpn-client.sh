@@ -116,7 +116,7 @@ vpn_online () {
     fi
   elif [ "$Client" ]; then
 # No internet connection and OpenVPN is active.
-    printf '%s\n' "OpenVPN client $Client is active but offline!"
+    printf '%s\n' "OpenVPN client $Client is active but offline!" >&2
     vpn_confirm stop
   else
 # No internet connection and OpenVPN is inactive.
@@ -129,14 +129,18 @@ vpn_main () {
   if systemctl is-active -q openvpn-client@*; then
     Client="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
     case $1 in
-      status) printf '%s\n' "OpenVPN client $Client is active" ;;
+      status) printf '%s\n' "OpenVPN client $Client is active!" ;;
       stop) vpn_confirm "$1" "$2" ;;
       *) vpn_online "$1" "$2" ;;
     esac
   else
     case $1 in
-      restart|stop) return 1 ;;
-      status) printf '%s\n' "No active OpenVPN client" ;;
+      restart) vpn_start "$2" ;;
+      status) printf '%s\n' "No active OpenVPN client!" ;;
+      stop) case $2 in
+              now) return 1 ;;
+              *) printf '%s\n' "No active OpenVPN client!" >&2 ;;
+            esac ;;
       *) vpn_online "$1" "$2" ;;
     esac
   fi
