@@ -50,20 +50,22 @@ If you run the script without options, and a client is active, the
 script asks if you want to stop or restart the active client or "skip"
 to exit the script.
 
-You may also run the script with several options:
+Below is a summary of options:
 
 ```
-$ client-openvpn.sh [restart [now]|start [now]|status|stop [now]]
+$ client-openvpn.sh [restart|start|stop] [now]
 ```
 
-The option `status` reports on [OpenVPN](https://openvpn.net/):
-whether it's running and, if so, which client is active. If the script
-detects that a client is active but without an internet connection,
-the script reports that, too.
-
-The options `restart`, `start`, and `stop` attempt to perform their
-respective actions on the client. Adding `now` does so without asking
+Use `restart`, `start`, or `stop` to perform those actions on a
+client, bypassing menus, if applicable. Adding `now` bypasses prompts
 for confirmation.
+
+If no client is active, `restart` and `restart now` give error
+messages, then ask to start a profile, if you've listed any. By
+contrast, `stop` just gives an error message, while `stop now` just
+exits with an error code. The latter is helpful when all you care
+about is that [OpenVPN](https://openvpn.net/) is stopped, not whether
+there was an active client to begin with.
 
 ## Portability
 
