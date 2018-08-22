@@ -67,11 +67,6 @@ exits with an error code. The latter is helpful when all you care
 about is that [OpenVPN](https://openvpn.net/) is stopped, not whether
 there was an active client to begin with.
 
-## Portability
-
-Since the script uses arrays, it's not strictly
-[POSIX](https://en.wikipedia.org/wiki/POSIX)-compliant.
-
 ## License
 
 This project is in the public domain under [The
