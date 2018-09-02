@@ -136,11 +136,12 @@ vpn_main () {
     esac
   else
     case $1 in
-      restart) printf '%s\n' "No active OpenVPN client!" >&2
+      restart) printf "No active OpenVPN client! " >&2
                vpn_start "$2" ;;
       stop) case $2 in
               now) return 1 ;;
-              *) printf '%s\n' "No active OpenVPN client!" >&2 ;;
+              *) printf '%s\n' "No active OpenVPN client!" >&2
+                 return 1 ;;
             esac ;;
       *) vpn_online "$1" "$2" ;;
     esac
