@@ -38,7 +38,7 @@ client_loop () {
         if [ "${PClients[$i]}" = "$DClient" ]; then
           unset "PClients[$i]"
           PClients=("${PClients[@]}")
-          break;
+          break
         fi
       done
       PClients=("$DClient" "${PClients[@]}")
