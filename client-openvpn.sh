@@ -69,7 +69,7 @@ client_loop () {
 
 vpn_start () {
   if [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 0 ]; then
-    printf '%s\n' "Could not start OpenVPN! No listed clients!" >&2
+    printf '%s\n' "No listed OpenVPN clients!" >&2
     return 1
   elif [ -z "$DClient" ] && [ "${#PClients[*]}" -eq 1 ]; then
     Client="${PClients[*]}"
@@ -94,14 +94,12 @@ vpn_arg () {
 }
 
 vpn_confirm () {
-  if [ "$2" = now ]; then
-    vpn_arg "$1"
-  else
+  if [ "$2" != now ]; then
     local Confirm
     read -r -p "${1^} OpenVPN client $Client? [y/n] " Confirm
     [ "$Confirm" = y ] || return 1
-    vpn_arg "$1"
   fi
+  vpn_arg "$1"
 }
 
 vpn_online () {
