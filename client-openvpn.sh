@@ -3,13 +3,13 @@
 # From: https://github.com/brianchase/client-openvpn
 
 # Optional default client:
-#DClient="a.dummy.client"
+DClient="us2839.nord.udp"
 
 # Array of possible clients (change as necessary):
-PClients[0]="a.dummy.client"
-PClients[1]="b.dummy.client"
-PClients[2]="c.dummy.client"
-PClients[3]="d.dummy.client"
+PClients[0]="us2836.nord.udp"
+PClients[1]="us2837.nord.udp"
+PClients[2]="us2839.nord.udp"
+PClients[3]="us740.nord.udp"
 
 vpn_op () {
   until [ "$Opt" ]; do
@@ -103,7 +103,7 @@ vpn_confirm () {
 }
 
 vpn_online () {
-  if wget -q --tries=10 --timeout=20 --spider http://google.com; then
+  if wget -q --tries=10 --timeout=8 --spider http://google.com; then
     if [ "$1" = restart ]; then
 # An internet connection, OpenVPN is active, and '$1' is 'restart'.
       vpn_confirm restart "$2"
