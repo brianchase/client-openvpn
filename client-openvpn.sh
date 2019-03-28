@@ -3,13 +3,13 @@
 # From: https://github.com/brianchase/client-openvpn
 
 # Optional default client:
-DClient="us2839.nord.udp"
+DClient="us2897.nord.tcp"
 
 # Array of possible clients (change as necessary):
 PClients[0]="us2836.nord.udp"
 PClients[1]="us2837.nord.udp"
 PClients[2]="us2839.nord.udp"
-PClients[3]="us740.nord.udp"
+PClients[3]="us2897.nord.tcp"
 
 vpn_op () {
   until [ "$Opt" ]; do
@@ -127,7 +127,7 @@ vpn_online () {
 
 vpn_main () {
   if systemctl is-active -q openvpn-client@*; then
-    Client="$(systemctl list-units -t service | grep -oP 'OpenVPN tunnel for \K.*\b')"
+    Client="$(systemctl list-units -t service --state=running | grep -oP 'OpenVPN tunnel for \K.*\b')"
     case $1 in
       stop) vpn_confirm "$1" "$2" ;;
       *) vpn_online "$1" "$2" ;;
