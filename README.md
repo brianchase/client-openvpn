@@ -3,8 +3,8 @@
 ## About
 
 This Bash script helps with managing
-[VPN](https://en.wikipedia.org/wiki/Virtual_private_network)
-connections with [OpenVPN](https://openvpn.net/).
+[VPN](https://en.wikipedia.org/wiki/Virtual_private_network "VPN")
+connections with [OpenVPN](https://openvpn.net "OpenVPN").
 
 ## How It Works
 
@@ -64,15 +64,16 @@ If no client is active, `restart` and `restart now` give error
 messages, then ask to start a profile, if you've listed any. By
 contrast, `stop` just gives an error message, while `stop now` just
 exits with an error code. The latter is helpful when all you care
-about is that [OpenVPN](https://openvpn.net/) is stopped, not whether
-there was an active client to begin with.
+about is that [OpenVPN](https://openvpn.net "OpenVPN") is stopped, not
+whether there was an active client to begin with.
 
 ## License
 
 This project is in the public domain under [The
-Unlicense](https://choosealicense.com/licenses/unlicense/).
+Unlicense](https://choosealicense.com/licenses/unlicense "The
+Unlicense").
 
 ## Requirements
 
-* [OpenVPN](https://openvpn.net/)
+* [OpenVPN](https://openvpn.net "OpenVPN")
 
