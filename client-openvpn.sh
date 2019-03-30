@@ -3,13 +3,13 @@
 # From: https://github.com/brianchase/client-openvpn
 
 # Optional default client:
-DClient="us2897.nord.tcp"
+#DClient=""
 
 # Array of possible clients (change as necessary):
-PClients[0]="us2836.nord.udp"
-PClients[1]="us2837.nord.udp"
-PClients[2]="us2839.nord.udp"
-PClients[3]="us2897.nord.tcp"
+PClients[0]="a.dummy.client"
+PClients[1]="b.dummy.client"
+PClients[2]="c.dummy.client"
+PClients[3]="d.dummy.client"
 
 vpn_op () {
   until [ "$Opt" ]; do
